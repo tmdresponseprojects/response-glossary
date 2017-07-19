@@ -4,16 +4,16 @@
   <div class="panel panel-default">
   	<div class="panel-body">
       <center>
-        <div class="row">
-          <div class="two columns">Glossary</div>
+        <div class="row animated fadeInUp">
+          <div class="two columns"  v-on:click="clearsearch()">Glossary</div>
           <div class="eight columns">
             <input type="text" v-model="searchString" placeholder="Search" />
           </div>
           <div class="two columns">
-            <div id="btnLogout" class="logout" v-on:click="LogOut()">
-              <a class="sign">Log Out</a>
+            <div id="btnLogout" class="logout" v-on:click="LogOut(), handledauth()">
+              <a class="sign" v-bind:class="{ hidden: hideinfo }">Log Out</a>
             </div>
-            <div id="btnLogin" v-on:click="googleLogin()">
+            <div id="btnLogin" v-on:click="googleLogin(), handledauth()" v-bind:class="{ hidden: hidelogin }">
               <a class="sign">Google Sign In</a>
             </div>
           </div>
@@ -21,12 +21,12 @@
       </center>
     </div>
   </div>
-  <div id="bodyblock" class="container">
+  <div id="bodyblock" class="container animated fadeInUp" v-bind:class="{ hidden: hideinfo }">
     <div class="row">
       <div class="three columns">
         <div class = "index">
           <center>
-            <p>Index</p>
+            <p v-on:click="clearsearch()">Index</p>
           </center>
           <ul class="liindex">
             <li class="clickable" v-for="word in sortedWords" v-on:click="clicksearch(word)">
@@ -71,7 +71,9 @@ let WordsRef = db.ref('Words')
 export default {
   data () {
     return {
-      searchString: ''
+      searchString: '',
+      hidelogin: false,
+      hideinfo: true
     }
   },
   firebase: {
@@ -109,6 +111,9 @@ export default {
     clicksearch: function (w) {
       this.searchString = w.word
     },
+    clearsearch: function () {
+      this.searchString = ''
+    },
     googleLogin: function () {
       Firebase.auth().signInWithPopup(provider).then(function (result) {
         console.log(result)
@@ -116,28 +121,50 @@ export default {
     },
     LogOut: function () {
       Firebase.auth().signOut()
-      document.getElementById('btnLogin').style.display = ''
+      this.clearsearch()
+    },
+    handledauth: function () {
+      Firebase.auth().onAuthStateChanged(firebaseUser => {
+        if (firebaseUser) {
+          firebaseUser.sendEmailVerification().then(function () {
+          },
+        )
+          if (firebaseUser.emailVerified === true) {
+            this.hideinfo = false
+            this.hidelogin = true
+          } else {
+            this.hideinfo = true
+            this.hidelogin = false
+          }
+        } else {
+          this.hideinfo = true
+          this.hidelogin = false
+        }
+      })
+      return null
     }
+  },
+  created: function () {
+    Firebase.auth().onAuthStateChanged(firebaseUser => {
+      if (firebaseUser) {
+        firebaseUser.sendEmailVerification().then(function () {
+        },
+      )
+        if (firebaseUser.emailVerified === true) {
+          this.hideinfo = false
+          this.hidelogin = true
+        } else {
+          this.hideinfo = true
+          this.hidelogin = false
+        }
+      } else {
+        this.hideinfo = true
+        this.hidelogin = false
+      }
+    })
+    return null
   }
 }
-Firebase.auth().onAuthStateChanged(firebaseUser => {
-  if (firebaseUser) {
-    firebaseUser.sendEmailVerification().then(function () {
-    },
-  )
-    if (firebaseUser.emailVerified === true) {
-      document.getElementById('btnLogout').style.display = ''
-      document.getElementById('btnLogin').style.display = 'none'
-      document.getElementById('bodyblock').style.display = ''
-    } else {
-      document.getElementById('btnLogout').style.display = 'none'
-      document.getElementById('bodyblock').style.display = 'none'
-    }
-  } else {
-    document.getElementById('btnLogout').style.display = 'none'
-    document.getElementById('bodyblock').style.display = 'none'
-  }
-})
 </script>
 
 <style>
@@ -186,5 +213,8 @@ Firebase.auth().onAuthStateChanged(firebaseUser => {
   }
   ul.liindex{
     list-style-type: none
+  }
+  .hidden{
+    display: none;
   }
 </style>
