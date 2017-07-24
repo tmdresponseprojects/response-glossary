@@ -5,16 +5,22 @@
   	<div class="panel-body">
       <center>
         <div class="row animated fadeInUp">
-          <div class="two columns"  v-on:click="clearsearch()">Glossary</div>
+          <div class="two columns">
+            <div class="toptext">
+              Glossary
+            </div>
+          </div>
           <div class="eight columns">
-            <input type="text" v-model="searchString" placeholder="Search" />
+            <input class="searchstyle" type="text" v-model="searchString" placeholder="Search" v-on:click="clearsearch()" />
           </div>
           <div class="two columns">
-            <div id="btnLogout" class="logout" v-on:click="LogOut(), handledauth()">
-              <a class="sign" v-bind:class="{ hidden: hideinfo }">Log Out</a>
-            </div>
-            <div id="btnLogin" v-on:click="googleLogin(), handledauth()" v-bind:class="{ hidden: hidelogin }">
-              <a class="sign">Google Sign In</a>
+            <div class="toptext">
+              <div id="btnLogout" class="logout" v-on:click="LogOut(), handledauth()">
+                <a class="sign" v-bind:class="{ hidden: hideinfo }">Log Out</a>
+              </div>
+              <div id="btnLogin" v-on:click="googleLogin(), handledauth()" v-bind:class="{ hidden: hidelogin }">
+                <a class="sign">Google Sign In</a>
+              </div>
             </div>
           </div>
         </div>
@@ -22,33 +28,31 @@
     </div>
   </div>
   <div id="bodyblock" class="container animated fadeInUp" v-bind:class="{ hidden: hideinfo }">
-    <div class="row">
-      <div class="three columns">
-        <div class = "index">
-          <center>
-            <p v-on:click="clearsearch()">Index</p>
-          </center>
-          <ul class="liindex">
-            <li class="clickable" v-for="word in sortedWords" v-on:click="clicksearch(word)">
-              <center>
-                {{word.word}}
-              </center>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="nine columns">
-        <div class="outputdisplay">
-          <ul class="listDisplay">
-            <li v-for="word in filteredWords">
-              <p class="word">{{word.word}}</p>
-              <p class="definition">({{word.pos}}); {{word.definition}}</p>
-              <p class="example">{{word.example}}</p>
-            </li>
-          </ul>
-        </div>
-      </div>
-  	</div>
+    <p class="displayindex animated fadeInUp" v-on:click="showindex()" v-bind:class="{hidden: indexbtnhide}">Click to view Index</p>
+    <p class="closeindex animated fadeInUp" v-on:click="dontshowindex" v-bind:class="{ hidden: hideindex }">Close</p>
+    <div class = "index animated zoomIn" v-bind:class="{ hidden: hideindex }">
+      <center>
+        <p>Index</p>
+      </center>
+      <ul class="liindex">
+        <li class="clickable" v-for="word in sortedWords" v-on:click="clicksearch(word), dontshowindex()">
+          {{word.word}}
+        </li>
+      </ul>
+    </div>
+    </br>
+    </br>
+    <div class="outputdisplay">
+      <ul class="listDisplay">
+        <li v-for="word in filteredWords">
+          <p class="word">{{word.word}}</p>
+            <div v-for="each in word.url">
+              <a class="website" v-bind:href="each">Wikipedia Reference</a>
+            </div>
+          <p class="definition">{{word.definition}}</p>
+        </li>
+      </ul>
+    </div>
 	</div>
 </div>
 </form>
@@ -73,15 +77,19 @@ export default {
     return {
       searchString: '',
       hidelogin: false,
-      hideinfo: true
+      hideinfo: true,
+      hideindex: true,
+      indexbtnhide: false
     }
   },
   firebase: {
     Words: WordsRef
   },
   computed: {
+    // Functionality to display filter displayed words as user enters characters
     filteredWords: function () {
       var wordsArray = this.Words
+      console.log(wordsArray)
       var searchString = this.searchString
       if (!searchString) {
         return wordsArray
@@ -92,8 +100,10 @@ export default {
           return item
         }
       })
+      console.log(wordsArray)
       return wordsArray
     },
+    // Functionality to sort database in abc order
     sortedWords: function () {
       function compare (a, b) {
         if (a.word < b.word) {
@@ -108,21 +118,46 @@ export default {
     }
   },
   methods: {
+    // The search strings text becomes the input 'w'
     clicksearch: function (w) {
       this.searchString = w.word
     },
+    // The search string is cleared
     clearsearch: function () {
       this.searchString = ''
     },
+    // Login functionality for signing in with a google account
     googleLogin: function () {
       Firebase.auth().signInWithPopup(provider).then(function (result) {
         console.log(result)
       })
     },
+    // Log out functionality
     LogOut: function () {
       Firebase.auth().signOut()
       this.clearsearch()
     },
+    // Functionaity to show index
+    showindex: function () {
+      this.hideindex = false
+      this.indexbtnhide = true
+    },
+    // Functionality to hide index
+    dontshowindex: function () {
+      this.hideindex = true
+      this.indexbtnhide = false
+    },
+    // When run will display screen for logged in user
+    displayforlogin: function () {
+      this.hideinfo = false
+      this.hidelogin = true
+    },
+    // When run will display screen for no logged in user
+    displayforlogout: function () {
+      this.hideinfo = true
+      this.hidelogin = false
+    },
+    // Handles display for authenticated and no logged in user
     handledauth: function () {
       Firebase.auth().onAuthStateChanged(firebaseUser => {
         if (firebaseUser) {
@@ -130,15 +165,12 @@ export default {
           },
         )
           if (firebaseUser.emailVerified === true) {
-            this.hideinfo = false
-            this.hidelogin = true
+            this.displayforlogin()
           } else {
-            this.hideinfo = true
-            this.hidelogin = false
+            this.displayforlogout()
           }
         } else {
-          this.hideinfo = true
-          this.hidelogin = false
+          this.displayforlogout()
         }
       })
       return null
@@ -151,15 +183,12 @@ export default {
         },
       )
         if (firebaseUser.emailVerified === true) {
-          this.hideinfo = false
-          this.hidelogin = true
+          this.displayforlogin()
         } else {
-          this.hideinfo = true
-          this.hidelogin = false
+          this.displayforlogout()
         }
       } else {
-        this.hideinfo = true
-        this.hidelogin = false
+        this.displayforlogout()
       }
     })
     return null
@@ -176,11 +205,10 @@ export default {
   }
   div.index {
     width: 100%;
-    height: 250px;
+    height: 500px;
     overflow: scroll;
     border-radius: 5px;
     border-color: #2c3e50;
-    background: grey;
   }
   div.outputdisplay {
      word-wrap: break-word;
@@ -189,15 +217,16 @@ export default {
     list-style-type: none;
   }
   p.word{
+    text-align: left;
     font-size: 40px;
     font-weight: bold;
     font-variant: small-caps;
   }
   p.definition{
-    text-indent: 1em;
+    text-align: right;
+    font-style: italic;
   }
-  p.example{
-    text-indent: 1em;
+  a.website{
     font-style: italic;
   }
   a.sign{
@@ -213,6 +242,29 @@ export default {
   }
   ul.liindex{
     list-style-type: none
+  }
+  p.displayindex{
+    text-align: right;
+    font-family: cursive;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+  div.toptext{
+    font-family: cursive;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+  input.searchstyle {
+    font-family: cursive;
+  }
+  p.closeindex{
+    text-align: right;
+    font-family: cursive;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 20px;
   }
   .hidden{
     display: none;
