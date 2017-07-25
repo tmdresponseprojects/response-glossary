@@ -28,14 +28,14 @@
     </div>
   </div>
   <div id="bodyblock" class="container animated fadeInUp" v-bind:class="{ hidden: hideinfo }">
-    <p class="displayindex animated fadeInUp" v-on:click="showindex()" v-bind:class="{hidden: indexbtnhide}">Click to view Index</p>
-    <p class="closeindex animated fadeInUp" v-on:click="dontshowindex" v-bind:class="{ hidden: hideindex }">Close</p>
+    <p class="displayindex animated fadeInUp" v-on:click="showindex(), hidethelist()" v-bind:class="{hidden: indexbtnhide}">Click to view Index</p>
+    <p class="closeindex animated fadeInUp" v-on:click="dontshowindex(), showthelist()" v-bind:class="{ hidden: hideindex }">Close</p>
     <div class = "index animated zoomIn" v-bind:class="{ hidden: hideindex }">
       <center>
         <p>Index</p>
       </center>
       <ul class="liindex">
-        <li class="clickable" v-for="word in sortedWords" v-on:click="clicksearch(word), dontshowindex()">
+        <li class="clickable" v-for="word in sortedWords" v-on:click="clicksearch(word), dontshowindex(), showthelist()">
           {{word.word}}
         </li>
       </ul>
@@ -43,7 +43,7 @@
     </br>
     </br>
     <div class="outputdisplay">
-      <ul class="listDisplay">
+      <ul class="listDisplay" v-bind:class="{hidden: listhide}">
         <li v-for="word in filteredWords">
           <p class="word">{{word.word}}</p>
             <div v-for="each in word.url">
@@ -79,7 +79,8 @@ export default {
       hidelogin: false,
       hideinfo: true,
       hideindex: true,
-      indexbtnhide: false
+      indexbtnhide: false,
+      listhide: false
     }
   },
   firebase: {
@@ -157,6 +158,14 @@ export default {
       this.hideinfo = true
       this.hidelogin = false
     },
+    // When called the list will show. Called after index is closed
+    showthelist: function () {
+      this.listhide = false
+    },
+    // When called the list will hide. Called when index is opened
+    hidethelist: function () {
+      this.listhide = true
+    },
     // Handles display for authenticated and no logged in user
     handledauth: function () {
       Firebase.auth().onAuthStateChanged(firebaseUser => {
@@ -205,7 +214,7 @@ export default {
   }
   div.index {
     width: 100%;
-    height: 500px;
+    height: 100vh;
     overflow: scroll;
     border-radius: 5px;
     border-color: #2c3e50;
