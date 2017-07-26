@@ -46,10 +46,10 @@
       <ul class="listDisplay" v-bind:class="{hidden: listhide}">
         <li v-for="word in filteredWords">
           <p class="word">{{word.word}}</p>
-            <div v-for="each in word.url">
-              <a class="website" v-bind:href="each">Wikipedia Reference</a>
-            </div>
           <p class="definition">{{word.definition}}</p>
+          <div v-for="each in word.url">
+            <a class="website" v-bind:href="each" target="_blank">Reference Article</a>
+          </div>
         </li>
       </ul>
     </div>
@@ -232,7 +232,6 @@ export default {
     font-variant: small-caps;
   }
   p.definition{
-    text-align: right;
     font-style: italic;
   }
   a.website{
