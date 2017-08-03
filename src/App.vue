@@ -1,7 +1,7 @@
 <template>
 <form v-cloak>
 <div id="app">
-  <div class="panel panel-default">
+  <div id="top" class="panel panel-default">
   	<div class="panel-body">
       <center>
         <div class="row animated fadeInUp">
@@ -28,23 +28,55 @@
     </div>
   </div>
   <div id="bodyblock" class="container animated fadeInUp" v-bind:class="{ hidden: hideinfo }">
-    <p class="displayindex animated fadeInUp" v-on:click="showindex(), hidethelist()" v-bind:class="{hidden: indexbtnhide}">Click to view Index</p>
-    <p class="closeindex animated fadeInUp" v-on:click="dontshowindex(), showthelist()" v-bind:class="{ hidden: hideindex }">Close</p>
-    <div class = "index animated zoomIn" v-bind:class="{ hidden: hideindex }">
-      <center>
-        <p>Index</p>
-      </center>
+    <p class="displayindex animated fadeInUp" v-on:click="showindex(), hidethelist()" v-bind:class="{hidden: indexbtnhide}">View Index</p>
+    <p class="closeindex animated fadeInUp" v-on:click="dontshowindex(), showthelist()" v-bind:class="{ hidden: hideindex }">Close Index</p>
+    <div class="index animated zoomIn" v-bind:class="{ hidden: hideindex }">
+        <p class="indexheader">Index</p>
       <ul class="liindex">
         <li class="clickable" v-for="word in sortedWords" v-on:click="clicksearch(word), dontshowindex(), showthelist()">
           {{word.word}}
         </li>
       </ul>
     </div>
-    </br>
-    </br>
     <div class="outputdisplay">
       <ul class="listDisplay" v-bind:class="{hidden: listhide}">
+        <div class="alphaaddress">
+          <div class="parent">
+            <div class="child">
+              <a class="jump" href="#." v-on:click="azpagelayout()">.</a>
+              <a class="jump" href="#A" v-on:click="azpagelayout()">a</a>
+              <a class="jump" href="#B" v-on:click="azpagelayout()">b</a>
+              <a class="jump" href="#C" v-on:click="azpagelayout()">c</a>
+              <a class="jump" href="#D" v-on:click="azpagelayout()">d</a>
+              <a class="jump" href="#E" v-on:click="azpagelayout()">e</a>
+              <a class="jump" href="#F" v-on:click="azpagelayout()">f</a>
+              <a class="jump" href="#G" v-on:click="azpagelayout()">g</a>
+              <a class="jump" href="#H" v-on:click="azpagelayout()">h</a>
+              <a class="jump" href="#I" v-on:click="azpagelayout()">i</a>
+              <a class="jump" href="#J" v-on:click="azpagelayout()">j</a>
+              <a class="jump" href="#K" v-on:click="azpagelayout()">k</a>
+              <a class="jump" href="#L" v-on:click="azpagelayout()">l</a>
+              <a class="jump" href="#M" v-on:click="azpagelayout()">m</a>
+              <a class="jump" href="#N" v-on:click="azpagelayout()">n</a>
+              <a class="jump" href="#O" v-on:click="azpagelayout()">o</a>
+              <a class="jump" href="#P" v-on:click="azpagelayout()">p</a>
+              <a class="jump" href="#Q" v-on:click="azpagelayout()">q</a>
+              <a class="jump" href="#R" v-on:click="azpagelayout()">r</a>
+              <a class="jump" href="#S" v-on:click="azpagelayout()">s</a>
+              <a class="jump" href="#T" v-on:click="azpagelayout()">t</a>
+              <a class="jump" href="#U" v-on:click="azpagelayout()">u</a>
+              <a class="jump" href="#V" v-on:click="azpagelayout()">v</a>
+              <a class="jump" href="#W" v-on:click="azpagelayout()">w</a>
+              <a class="jump" href="#X" v-on:click="azpagelayout()">x</a>
+              <a class="jump" href="#Y" v-on:click="azpagelayout()">y</a>
+              <a class="jump" href="#Z" v-on:click="azpagelayout()">z</a>
+            </div>
+          </div>
+        </div>
         <li v-for="word in filteredWords">
+          <div v-if="letteraccess(word) != false">
+            <div class="letterjump" v-bind:id="giveanchor()">{{giveanchor()}}</div>
+          </div>
           <p class="word">{{word.word}}</p>
           <p class="definition">{{word.definition}}</p>
           <div v-for="each in word.url">
@@ -53,7 +85,9 @@
         </li>
       </ul>
     </div>
+    <a class="totop" href="#top"><i class="up"></i></a>
 	</div>
+  <img src="./assets/response.png" class="logingraphic" v-bind:class="{hidden: hidelogin}">
 </div>
 </form>
 </template>
@@ -72,6 +106,7 @@ const app = Firebase.initializeApp(config)
 var provider = new Firebase.auth.GoogleAuthProvider()
 let db = app.database()
 let WordsRef = db.ref('Words')
+var letterindex = ''
 export default {
   data () {
     return {
@@ -90,7 +125,6 @@ export default {
     // Functionality to display filter displayed words as user enters characters
     filteredWords: function () {
       var wordsArray = this.Words
-      console.log(wordsArray)
       var searchString = this.searchString
       if (!searchString) {
         return wordsArray
@@ -101,7 +135,6 @@ export default {
           return item
         }
       })
-      console.log(wordsArray)
       return wordsArray
     },
     // Functionality to sort database in abc order
@@ -119,6 +152,28 @@ export default {
     }
   },
   methods: {
+    // Functionality to place anchor destinations throughout page
+    letteraccess: function (current) {
+      let currentfirst = ''
+      currentfirst = current.word[0]
+      if (currentfirst === letterindex) {
+        return false
+      }
+      if (currentfirst !== letterindex) {
+        letterindex = currentfirst
+        return currentfirst
+      }
+    },
+    // Returns current index to store as destination for anchor tag
+    giveanchor: function () {
+      return letterindex
+    },
+    // Sets up page layout for an a-z click address
+    azpagelayout: function () {
+      this.clearsearch()
+      this.dontshowindex()
+      this.showthelist()
+    },
     // The search strings text becomes the input 'w'
     clicksearch: function (w) {
       this.searchString = w.word
@@ -231,6 +286,9 @@ export default {
     font-weight: bold;
     font-variant: small-caps;
   }
+  p.indexheader{
+    text-align: center;
+  }
   p.definition{
     font-style: italic;
   }
@@ -249,10 +307,10 @@ export default {
     transition: font 0.3s;
   }
   ul.liindex{
-    list-style-type: none
+    list-style-type: none;
   }
   p.displayindex{
-    text-align: right;
+    text-align: center;
     font-family: cursive;
     font-size: 28px;
     font-weight: 400;
@@ -268,11 +326,57 @@ export default {
     font-family: cursive;
   }
   p.closeindex{
-    text-align: right;
+    text-align: center;
     font-family: cursive;
     font-size: 28px;
     font-weight: 400;
     line-height: 20px;
+  }
+  a.jump {
+    display: inline;
+    font-family: cursive;
+  }
+  div.letterjump {
+    text-align: center;
+    background-color: lightgrey;
+    font-family: cursive;
+  }
+  div.alphaaddress {
+      text-align: center;
+      font-size: 24px;
+  }
+  div.parent {
+    width: 100%;
+    overflow-x: scroll;
+    align-items: center;
+  }
+  div.child {
+    width: 464px;
+    display: block;
+    margin: auto;
+  }
+  a.totop {
+    position: fixed;
+    right: 20px;
+    bottom: 0px;
+    font-size: 24px;
+  }
+  i.up {
+    border: solid lightgrey;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 10px;
+    transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+  }
+  i.up:hover {
+    border: solid grey;
+    border-width: 0 3px 3px 0;
+    padding: 12px;
+  }
+  img.logingraphic {
+    display: block;
+    margin: auto;
   }
   .hidden{
     display: none;
