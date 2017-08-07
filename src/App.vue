@@ -27,7 +27,7 @@
       </center>
     </div>
   </div>
-  <div id="bodyblock" class="container animated fadeInUp" v-bind:class="{ hidden: hideinfo }">
+  <div id="bodyblock" class="animated fadeInUp" v-bind:class="{ hidden: hideinfo }">
     <div class="outputdisplay">
       <ul class="listDisplay">
         <div class="alphaaddress">
@@ -63,15 +63,18 @@
             </div>
           </div>
         </div>
+        <div v-for="word in sortedWords"></div>
         <li v-for="word in filteredWords">
           <div v-if="letteraccess(word) != false">
             <div class="letterjump" v-bind:id="giveanchor()">{{giveanchor()}}</div>
           </div>
+          <div class="card">
           <p class="word">{{word.word}}</p>
           <p class="definition">{{word.definition}}</p>
           <div v-for="each in word.url">
             <a class="website" v-bind:href="each" target="_blank">Reference Article</a>
           </div>
+        </div>
         </li>
       </ul>
     </div>
@@ -238,9 +241,12 @@ export default {
      word-wrap: break-word;
   }
   div.letterjump {
+    font-size: 50px;
     text-align: center;
     background-color: lightgrey;
+    width: 60px;
     font-family: cursive;
+    border-radius: 50px;
   }
   div.alphaaddress {
       text-align: center;
@@ -262,9 +268,14 @@ export default {
     font-weight: 400;
     line-height: 20px;
   }
+  div.card{
+    margin-right:33px;
+    margin-left: 33px;
+    position: relative;
+  }
   p.word{
     text-align: left;
-    font-size: 40px;
+    font-size: 30px;
     font-weight: bold;
     font-variant: small-caps;
   }
