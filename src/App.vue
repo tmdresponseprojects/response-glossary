@@ -28,18 +28,8 @@
     </div>
   </div>
   <div id="bodyblock" class="container animated fadeInUp" v-bind:class="{ hidden: hideinfo }">
-    <p class="displayindex animated fadeInUp" v-on:click="showindex(), hidethelist()" v-bind:class="{hidden: indexbtnhide}">View Index</p>
-    <p class="closeindex animated fadeInUp" v-on:click="dontshowindex(), showthelist()" v-bind:class="{ hidden: hideindex }">Close Index</p>
-    <div class="index animated zoomIn" v-bind:class="{ hidden: hideindex }">
-        <p class="indexheader">Index</p>
-      <ul class="liindex">
-        <li class="clickable" v-for="word in sortedWords" v-on:click="clicksearch(word), dontshowindex(), showthelist()">
-          {{word.word}}
-        </li>
-      </ul>
-    </div>
     <div class="outputdisplay">
-      <ul class="listDisplay" v-bind:class="{hidden: listhide}">
+      <ul class="listDisplay">
         <div class="alphaaddress">
           <div class="parent">
             <div class="child">
@@ -112,10 +102,7 @@ export default {
     return {
       searchString: '',
       hidelogin: false,
-      hideinfo: true,
-      hideindex: true,
-      indexbtnhide: false,
-      listhide: false
+      hideinfo: true
     }
   },
   firebase: {
@@ -171,8 +158,6 @@ export default {
     // Sets up page layout for an a-z click address
     azpagelayout: function () {
       this.clearsearch()
-      this.dontshowindex()
-      this.showthelist()
     },
     // The search strings text becomes the input 'w'
     clicksearch: function (w) {
@@ -193,16 +178,6 @@ export default {
       Firebase.auth().signOut()
       this.clearsearch()
     },
-    // Functionaity to show index
-    showindex: function () {
-      this.hideindex = false
-      this.indexbtnhide = true
-    },
-    // Functionality to hide index
-    dontshowindex: function () {
-      this.hideindex = true
-      this.indexbtnhide = false
-    },
     // When run will display screen for logged in user
     displayforlogin: function () {
       this.hideinfo = false
@@ -212,14 +187,6 @@ export default {
     displayforlogout: function () {
       this.hideinfo = true
       this.hidelogin = false
-    },
-    // When called the list will show. Called after index is closed
-    showthelist: function () {
-      this.listhide = false
-    },
-    // When called the list will hide. Called when index is opened
-    hidethelist: function () {
-      this.listhide = true
     },
     // Handles display for authenticated and no logged in user
     handledauth: function () {
@@ -267,74 +234,8 @@ export default {
     -moz-osx-font-smoothing: grayscale;
     color: #2c3e50;
   }
-  div.index {
-    width: 100%;
-    height: 100vh;
-    overflow: scroll;
-    border-radius: 5px;
-    border-color: #2c3e50;
-  }
   div.outputdisplay {
      word-wrap: break-word;
-  }
-  ul.listDisplay {
-    list-style-type: none;
-  }
-  p.word{
-    text-align: left;
-    font-size: 40px;
-    font-weight: bold;
-    font-variant: small-caps;
-  }
-  p.indexheader{
-    text-align: center;
-  }
-  p.definition{
-    font-style: italic;
-  }
-  a.website{
-    font-style: italic;
-  }
-  a.sign{
-    color: #2c3e50;
-  }
-  li.clickable:hover{
-    font-size: 24px;
-  }
-  li.clickable{
-    font-size: 16px;
-    line-height: 24px;
-    transition: font 0.3s;
-  }
-  ul.liindex{
-    list-style-type: none;
-  }
-  p.displayindex{
-    text-align: center;
-    font-family: cursive;
-    font-size: 28px;
-    font-weight: 400;
-    line-height: 20px;
-  }
-  div.toptext{
-    font-family: cursive;
-    font-size: 28px;
-    font-weight: 400;
-    line-height: 20px;
-  }
-  input.searchstyle {
-    font-family: cursive;
-  }
-  p.closeindex{
-    text-align: center;
-    font-family: cursive;
-    font-size: 28px;
-    font-weight: 400;
-    line-height: 20px;
-  }
-  a.jump {
-    display: inline;
-    font-family: cursive;
   }
   div.letterjump {
     text-align: center;
@@ -355,11 +256,44 @@ export default {
     display: block;
     margin: auto;
   }
+  div.toptext{
+    font-family: cursive;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+  p.word{
+    text-align: left;
+    font-size: 40px;
+    font-weight: bold;
+    font-variant: small-caps;
+  }
+  p.definition{
+    font-style: italic;
+  }
+  a.jump {
+    display: inline;
+    font-family: cursive;
+  }
   a.totop {
     position: fixed;
     right: 20px;
     bottom: 0px;
     font-size: 24px;
+  }
+  a.website{
+    font-style: italic;
+  }
+  a.sign{
+    color: #2c3e50;
+  }
+  li.clickable:hover{
+    font-size: 24px;
+  }
+  li.clickable{
+    font-size: 16px;
+    line-height: 24px;
+    transition: font 0.3s;
   }
   i.up {
     border: solid lightgrey;
@@ -373,6 +307,12 @@ export default {
     border: solid grey;
     border-width: 0 3px 3px 0;
     padding: 12px;
+  }
+  ul.listDisplay {
+    list-style-type: none;
+  }
+  input.searchstyle {
+    font-family: cursive;
   }
   img.logingraphic {
     display: block;
