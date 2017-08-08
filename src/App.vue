@@ -15,10 +15,10 @@
           </div>
           <div class="two columns">
             <div class="toptext">
-              <div id="btnLogout" class="logout" v-on:click="LogOut(), handledauth()">
-                <a class="sign" v-bind:class="{ hidden: hideinfo }">Log Out</a>
+              <div v-on:click="LogOut(), handledauth()" v-bind:class="{ hidden: hideinfo }">
+                <a class="sign">Log Out</a>
               </div>
-              <div id="btnLogin" v-on:click="googleLogin(), handledauth()" v-bind:class="{ hidden: hidelogin }">
+              <div v-on:click="googleLogin(), handledauth()" v-bind:class="{ hidden: hidelogin }">
                 <a class="sign">Google Sign In</a>
               </div>
             </div>
@@ -27,57 +27,32 @@
       </center>
     </div>
   </div>
-  <div id="bodyblock" class="animated fadeInUp" v-bind:class="{ hidden: hideinfo }">
-    <div class="outputdisplay">
-      <ul class="listDisplay">
-        <div class="alphaaddress">
-          <div class="parent">
-            <div class="child">
-              <a class="jump" href="#." v-on:click="azpagelayout()">.</a>
-              <a class="jump" href="#A" v-on:click="azpagelayout()">a</a>
-              <a class="jump" href="#B" v-on:click="azpagelayout()">b</a>
-              <a class="jump" href="#C" v-on:click="azpagelayout()">c</a>
-              <a class="jump" href="#D" v-on:click="azpagelayout()">d</a>
-              <a class="jump" href="#E" v-on:click="azpagelayout()">e</a>
-              <a class="jump" href="#F" v-on:click="azpagelayout()">f</a>
-              <a class="jump" href="#G" v-on:click="azpagelayout()">g</a>
-              <a class="jump" href="#H" v-on:click="azpagelayout()">h</a>
-              <a class="jump" href="#I" v-on:click="azpagelayout()">i</a>
-              <a class="jump" href="#J" v-on:click="azpagelayout()">j</a>
-              <a class="jump" href="#K" v-on:click="azpagelayout()">k</a>
-              <a class="jump" href="#L" v-on:click="azpagelayout()">l</a>
-              <a class="jump" href="#M" v-on:click="azpagelayout()">m</a>
-              <a class="jump" href="#N" v-on:click="azpagelayout()">n</a>
-              <a class="jump" href="#O" v-on:click="azpagelayout()">o</a>
-              <a class="jump" href="#P" v-on:click="azpagelayout()">p</a>
-              <a class="jump" href="#Q" v-on:click="azpagelayout()">q</a>
-              <a class="jump" href="#R" v-on:click="azpagelayout()">r</a>
-              <a class="jump" href="#S" v-on:click="azpagelayout()">s</a>
-              <a class="jump" href="#T" v-on:click="azpagelayout()">t</a>
-              <a class="jump" href="#U" v-on:click="azpagelayout()">u</a>
-              <a class="jump" href="#V" v-on:click="azpagelayout()">v</a>
-              <a class="jump" href="#W" v-on:click="azpagelayout()">w</a>
-              <a class="jump" href="#X" v-on:click="azpagelayout()">x</a>
-              <a class="jump" href="#Y" v-on:click="azpagelayout()">y</a>
-              <a class="jump" href="#Z" v-on:click="azpagelayout()">z</a>
+  <div class="animated fadeInUp" v-bind:class="{ hidden: hideinfo }">
+    <div class="parent">
+      <ul class="grid">
+        <div class="child">
+          <li v-for="word in sortedWords">
+            <div v-if="letteraccess(word) != false">
+              <a class="jump" v-bind:href="giveref()" v-on:click="azpagelayout()">{{giveanchor()}}</a>
             </div>
-          </div>
+          </li>
         </div>
-        <div v-for="word in sortedWords"></div>
-        <li v-for="word in filteredWords">
-          <div v-if="letteraccess(word) != false">
-            <div class="letterjump" v-bind:id="giveanchor()">{{giveanchor()}}</div>
-          </div>
-          <div class="card">
+      </ul>
+    </div>
+    <ul class="listDisplay">
+      <li v-for="word in filteredWords">
+        <div v-if="letteraccess(word) != false">
+          <div class="letterjump" v-bind:id="giveanchor()">{{giveanchor()}}</div>
+        </div>
+        <div class="card">
           <p class="word">{{word.word}}</p>
           <p class="definition">{{word.definition}}</p>
           <div v-for="each in word.url">
             <a class="website" v-bind:href="each" target="_blank">Reference Article</a>
           </div>
         </div>
-        </li>
-      </ul>
-    </div>
+      </li>
+    </ul>
     <a class="totop" href="#top"><i class="up"></i></a>
 	</div>
   <img src="./assets/response.png" class="logingraphic" v-bind:class="{hidden: hidelogin}">
@@ -158,13 +133,13 @@ export default {
     giveanchor: function () {
       return letterindex
     },
+    giveref: function () {
+      var direct = '#'
+      return (direct += letterindex)
+    },
     // Sets up page layout for an a-z click address
     azpagelayout: function () {
       this.clearsearch()
-    },
-    // The search strings text becomes the input 'w'
-    clicksearch: function (w) {
-      this.searchString = w.word
     },
     // The search string is cleared
     clearsearch: function () {
@@ -237,40 +212,36 @@ export default {
     -moz-osx-font-smoothing: grayscale;
     color: #2c3e50;
   }
-  div.outputdisplay {
-     word-wrap: break-word;
-  }
   div.letterjump {
     font-size: 50px;
+    left: 10px;
     text-align: center;
     background-color: lightgrey;
     width: 60px;
     font-family: cursive;
-    border-radius: 50px;
-  }
-  div.alphaaddress {
-      text-align: center;
-      font-size: 24px;
+    border-radius: 25px;
+    position: relative;
   }
   div.parent {
     width: 100%;
     overflow-x: scroll;
     align-items: center;
+    font-size: 28px;
+    text-align: center;
   }
   div.child {
-    width: 464px;
+    width: 437px;
     display: block;
     margin: auto;
   }
   div.toptext{
     font-family: cursive;
     font-size: 28px;
-    font-weight: 400;
     line-height: 20px;
   }
   div.card{
-    margin-right:33px;
-    margin-left: 33px;
+    margin-right:35px;
+    margin-left: 35px;
     position: relative;
   }
   p.word{
@@ -283,7 +254,6 @@ export default {
     font-style: italic;
   }
   a.jump {
-    display: inline;
     font-family: cursive;
   }
   a.totop {
@@ -297,14 +267,6 @@ export default {
   }
   a.sign{
     color: #2c3e50;
-  }
-  li.clickable:hover{
-    font-size: 24px;
-  }
-  li.clickable{
-    font-size: 16px;
-    line-height: 24px;
-    transition: font 0.3s;
   }
   i.up {
     border: solid lightgrey;
@@ -328,6 +290,9 @@ export default {
   img.logingraphic {
     display: block;
     margin: auto;
+  }
+  .grid li {
+    display: inline-block;
   }
   .hidden{
     display: none;
