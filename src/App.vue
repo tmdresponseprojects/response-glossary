@@ -11,15 +11,26 @@
             </div>
           </div>
           <div class="eight columns">
-            <input class="searchstyle" type="text" v-model="searchString" placeholder="Search" v-on:click="clearsearch()" />
+            <input class="searchstyle" type="text" v-model="searchString" placeholder="Search"/>
+            <input type="button" value="Clear" v-on:click="clearsearch()"></input>
+            <div class="parent" v-bind:class="{ hidden: hideinfo }">
+              <ul class="grid">
+                <div class="child">
+                  <li v-for="letter in allpossible">
+                    <a v-if="doesexist(letter)"class="jump" v-bind:href="giveref(letter)" v-on:click.prevent="()=>azpagelayout(letter)">{{letter}}</a>
+                    <a v-else="doesexist(letter)"class="jump, notactive" v-bind:href="giveref(letter)" v-on:click="azpagelayout()">{{letter}}</a>
+                  </li>
+                </div>
+              </ul>
+            </div>
           </div>
           <div class="two columns">
             <div class="toptext">
               <div v-on:click="LogOut(), handledauth()" v-bind:class="{ hidden: hideinfo }">
-                <a class="sign">Log Out</a>
+                <a>Log Out</a>
               </div>
               <div v-on:click="googleLogin(), handledauth()" v-bind:class="{ hidden: hidelogin }">
-                <a class="sign">Google Sign In</a>
+                <a>Google Sign In</a>
               </div>
             </div>
           </div>
@@ -27,35 +38,25 @@
       </center>
     </div>
   </div>
-  <div class="animated fadeInUp" v-bind:class="{ hidden: hideinfo }">
-    <div class="parent">
-      <ul class="grid">
-        <div class="child">
-          <li v-for="word in sortedWords">
-            <div v-if="letteraccess(word) != false">
-              <a class="jump" v-bind:href="giveref()" v-on:click="azpagelayout()">{{giveanchor()}}</a>
-            </div>
-          </li>
-        </div>
-      </ul>
-    </div>
+  <div id="body" class="animated fadeInUp" v-bind:class="{ hidden: hideinfo }">
     <ul class="listDisplay">
       <li v-for="word in filteredWords">
-        <div v-if="letteraccess(word) != false">
-          <div class="letterjump" v-bind:id="giveanchor()">{{giveanchor()}}</div>
+        <div class="one column"v-if="letteraccess(word) != false">
+            <div class="letterjump" v-bind:id="giveanchor()">{{giveanchor()}}</div>
         </div>
         <div class="card">
           <p class="word">{{word.word}}</p>
           <p class="definition">{{word.definition}}</p>
           <div v-for="each in word.url">
-            <a class="website" v-bind:href="each" target="_blank">Reference Article</a>
+            <a class="website" v-bind:href="each" target="_blank">{{each}}</a>
           </div>
         </div>
       </li>
     </ul>
-    <a class="totop" href="#top"><i class="up"></i></a>
 	</div>
+  <div v-for="word in sortedWords"></div>
   <img src="./assets/response.png" class="logingraphic" v-bind:class="{hidden: hidelogin}">
+  <a class="totop animated fadeIn" href="#app" v-bind:class="{hidden: hidetopjump}"><i class="up"></i></a>
 </div>
 </form>
 </template>
@@ -75,12 +76,17 @@ var provider = new Firebase.auth.GoogleAuthProvider()
 let db = app.database()
 let WordsRef = db.ref('Words')
 var letterindex = ''
+var currentexists = []
 export default {
   data () {
     return {
-      searchString: '',
       hidelogin: false,
-      hideinfo: true
+      hideinfo: true,
+      scrolled: false,
+      hidetopjump: true,
+      searchString: '',
+      allpossible: ['.', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+        'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
     }
   },
   firebase: {
@@ -117,6 +123,14 @@ export default {
     }
   },
   methods: {
+    // Handles when the jump to top button will show
+    handleScroll: function () {
+      this.scrolled = window.scrollY > 0
+      this.hidetopjump = false
+      if (window.scrollY === 0) {
+        this.hidetopjump = true
+      }
+    },
     // Functionality to place anchor destinations throughout page
     letteraccess: function (current) {
       let currentfirst = ''
@@ -126,20 +140,36 @@ export default {
       }
       if (currentfirst !== letterindex) {
         letterindex = currentfirst
+        if (currentexists.indexOf(currentfirst) <= -1) {
+          currentexists.push(currentfirst)
+        }
         return currentfirst
+      }
+    },
+    // Checks to see if a "first letter" exists
+    doesexist: function (input) {
+      console.log(currentexists)
+      if (currentexists.indexOf(input) <= -1) {
+        return false
+      } else {
+        return true
       }
     },
     // Returns current index to store as destination for anchor tag
     giveanchor: function () {
       return letterindex
     },
-    giveref: function () {
+    giveref: function (letter) {
       var direct = '#'
-      return (direct += letterindex)
+      return (direct += letter)
     },
     // Sets up page layout for an a-z click address
-    azpagelayout: function () {
+    azpagelayout: function (letter) {
       this.clearsearch()
+      var elem = document.getElementById(letter)
+      var location = elem.getBoundingClientRect()
+      console.log(location)
+      window.scroll(0, location.top + window.scrollY - 170)
     },
     // The search string is cleared
     clearsearch: function () {
@@ -200,6 +230,7 @@ export default {
         this.displayforlogout()
       }
     })
+    window.addEventListener('scroll', this.handleScroll)
     return null
   }
 }
@@ -211,26 +242,40 @@ export default {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: #2c3e50;
+    overflow-x: hidden;
+  }
+  #top {
+    position: fixed;
+    width: 100%;
+    z-index: 100;
+    background-color: white;
+    top: 0px;
+  }
+  #body {
+    position: relative;
+    padding-top: 170px;
   }
   div.letterjump {
     font-size: 50px;
-    left: 10px;
     text-align: center;
     background-color: lightgrey;
     width: 60px;
     font-family: cursive;
     border-radius: 25px;
     position: relative;
+    left: 20px;
   }
   div.parent {
     width: 100%;
     overflow-x: scroll;
+    overflow-y: hidden;
     align-items: center;
     font-size: 28px;
     text-align: center;
+    max-height: 39px;
   }
   div.child {
-    width: 437px;
+    width: 526px;
     display: block;
     margin: auto;
   }
@@ -241,17 +286,21 @@ export default {
   }
   div.card{
     margin-right:35px;
-    margin-left: 35px;
+    margin-left: 100px;
+    margin-bottom: 50px;
     position: relative;
   }
   p.word{
     text-align: left;
     font-size: 30px;
+    margin-bottom: 10px;
     font-weight: bold;
     font-variant: small-caps;
   }
   p.definition{
     font-style: italic;
+    margin-bottom: 10px;
+    max-width: 600px
   }
   a.jump {
     font-family: cursive;
@@ -265,8 +314,10 @@ export default {
   a.website{
     font-style: italic;
   }
-  a.sign{
-    color: #2c3e50;
+  a.notactive {
+   pointer-events: none;
+   cursor: default;
+   /*color: #2c3e50;*/
   }
   i.up {
     border: solid lightgrey;
@@ -290,6 +341,7 @@ export default {
   img.logingraphic {
     display: block;
     margin: auto;
+    margin-top: 150px;
   }
   .grid li {
     display: inline-block;
