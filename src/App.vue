@@ -18,7 +18,7 @@
                 <div class="child">
                   <li v-for="letter in allpossible">
                     <a v-if="doesexist(letter)"class="jump" v-bind:href="giveref(letter)" v-on:click.prevent="()=>azpagelayout(letter)">{{letter}}</a>
-                    <a v-else="doesexist(letter)"class="jump, notactive" v-bind:href="giveref(letter)" v-on:click="azpagelayout()">{{letter}}</a>
+                    <a v-else="doesexist(letter)"class="notactive" v-bind:href="giveref(letter)">{{letter}}</a>
                   </li>
                 </div>
               </ul>
@@ -300,7 +300,7 @@ export default {
   p.definition{
     font-style: italic;
     margin-bottom: 10px;
-    max-width: 600px
+    max-width: 600px;
   }
   a.jump {
     font-family: cursive;
@@ -317,6 +317,7 @@ export default {
   a.notactive {
    pointer-events: none;
    cursor: default;
+   font-family: cursive;
    /*color: #2c3e50;*/
   }
   i.up {
