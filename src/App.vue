@@ -12,7 +12,7 @@
           </div>
           <div class="eight columns">
             <input class="searchstyle" type="text" v-model="searchString" placeholder="Search"/>
-            <input type="button" value="Clear" v-on:click="clearsearch()"></input>
+            <input type="button" value="Clear" v-on:click="clearsearch()">
             <div class="parent" v-bind:class="{ hidden: hideinfo }">
               <ul class="grid">
                 <div class="child">
@@ -148,7 +148,6 @@ export default {
     },
     // Checks to see if a "first letter" exists
     doesexist: function (input) {
-      console.log(currentexists)
       if (currentexists.indexOf(input) <= -1) {
         return false
       } else {
@@ -168,7 +167,6 @@ export default {
       this.clearsearch()
       var elem = document.getElementById(letter)
       var location = elem.getBoundingClientRect()
-      console.log(location)
       window.scroll(0, location.top + window.scrollY - 170)
     },
     // The search string is cleared
@@ -178,7 +176,6 @@ export default {
     // Login functionality for signing in with a google account
     googleLogin: function () {
       Firebase.auth().signInWithPopup(provider).then(function (result) {
-        console.log(result)
       })
     },
     // Log out functionality
@@ -279,25 +276,25 @@ export default {
     display: block;
     margin: auto;
   }
-  div.toptext{
+  div.toptext {
     font-family: cursive;
     font-size: 28px;
     line-height: 20px;
   }
-  div.card{
+  div.card {
     margin-right:35px;
     margin-left: 100px;
     margin-bottom: 50px;
     position: relative;
   }
-  p.word{
+  p.word {
     text-align: left;
     font-size: 30px;
     margin-bottom: 10px;
     font-weight: bold;
     font-variant: small-caps;
   }
-  p.definition{
+  p.definition {
     font-style: italic;
     margin-bottom: 10px;
     max-width: 600px;
@@ -311,14 +308,13 @@ export default {
     bottom: 0px;
     font-size: 24px;
   }
-  a.website{
+  a.website {
     font-style: italic;
   }
   a.notactive {
    pointer-events: none;
    cursor: default;
    font-family: cursive;
-   /*color: #2c3e50;*/
   }
   i.up {
     border: solid lightgrey;
@@ -347,7 +343,7 @@ export default {
   .grid li {
     display: inline-block;
   }
-  .hidden{
+  .hidden {
     display: none;
   }
 </style>
