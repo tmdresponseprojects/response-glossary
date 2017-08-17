@@ -64,12 +64,12 @@
 <script>
 import Firebase from 'firebase'
 var config = {
-  apiKey: 'AIzaSyBdn9EdDahpPYDx0rJxYWGwmn3DaB-zP30',
-  authDomain: 'response-glossary.firebaseapp.com',
-  databaseURL: 'https://response-glossary.firebaseio.com',
-  projectId: 'response-glossary',
-  storageBucket: 'response-glossary.appspot.com',
-  messagingSenderId: '133393930480'
+  apiKey: 'AIzaSyBzXYBWtYP9Ns1hOfiu5dvi4ZqBIWJVk_I',
+  authDomain: 'responseglossary.firebaseapp.com',
+  databaseURL: 'https://responseglossary.firebaseio.com',
+  projectId: 'responseglossary',
+  storageBucket: 'responseglossary.appspot.com',
+  messagingSenderId: '864755262659'
 }
 const app = Firebase.initializeApp(config)
 var provider = new Firebase.auth.GoogleAuthProvider()
